@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Color Founder</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+      }
+
+      #imageInput {
+        margin: 20px;
+      }
+
+      #imagePreview {
+        max-width: 300px;
+        margin: 20px auto;
+        display: block;
+      }
+
+      .colorContainer {
+        display: inline-block;
+        margin: 10px;
+        padding: 10px;
+      }
+
+      .colorDisplay {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin: 10px auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="user-select: none">
+      <h1>Color Founder</h1>
+
+      <input type="file" id="imageInput" />
+      <img src="#" id="imagePreview" alt="Preview" />
+
+      <div class="colorContainer">
+        <h2>Primary Color</h2>
+        <div class="colorDisplay" id="primaryColor"></div>
+      </div>
+
+      <div class="colorContainer">
+        <h2>Secondary Color</h2>
+        <div class="colorDisplay" id="secondaryColor"></div>
+      </div>
+
+      <div class="colorContainer">
+        <h2>Another Color</h2>
+        <div class="colorDisplay" id="anotherColor"></div>
+      </div>
+    </div>
+
+    <!-- Add the ColorThief library from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+    <script>
+      document
+        .getElementById("imageInput")
+        .addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          const reader = new FileReader();
+
+          reader.onloadend = function () {
+            document.getElementById("imagePreview").src = reader.result;
+            extractColors(reader.result);
+          };
+
+          if (file) {
+            reader.readAsDataURL(file);
+          }
+        });
+
+      function extractColors(imageUrl) {
+        const img = new Image();
+        img.crossOrigin = "Anonymous"; // Enable CORS
+        img.src = imageUrl;
+
+        img.onload = function () {
+          const colorThief = new ColorThief();
+          const palette = colorThief.getPalette(img, 3); // Extract 3 dominant colors
+
+          const primaryColor = `rgb(${palette[0][0]}, ${palette[0][1]}, ${palette[0][2]})`;
+          const secondaryColor = `rgb(${palette[1][0]}, ${palette[1][1]}, ${palette[1][2]})`;
+          const anotherColor = `rgb(${palette[2][0]}, ${palette[2][1]}, ${palette[2][2]})`;
+
+          document.getElementById("primaryColor").style.backgroundColor =
+            primaryColor;
+          document.getElementById("secondaryColor").style.backgroundColor =
+            secondaryColor;
+          document.getElementById("anotherColor").style.backgroundColor =
+            anotherColor;
+        };
+      }
+    </script>
+  </body>
+</html>
